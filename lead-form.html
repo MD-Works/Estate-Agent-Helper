@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lead Form — Estate Agent Helper</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Raleway:wght@200;300;400;500&family=Syne:wght@400;500;600;700&family=Syne+Mono&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="dashboard.html" class="nav-brand"><span class="mark">✦</span> Estate Agent Helper</a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="leads.html">My Leads</a></li>
+      <li><a href="properties.html">Properties</a></li>
+      <li><a href="inspections.html">Inspections</a></li>
+      <li><a href="diary.html">Diary</a></li>
+    </ul>
+    <div class="nav-right">
+      <span class="nav-agent" id="nav-agent"></span>
+      <button id="btn-logout" class="btn btn-ghost btn-sm">Sign out</button>
+      <button class="nav-toggle" id="nav-toggle">☰</button>
+    </div>
+  </div>
+</nav>
+
+<main class="page-content" style="max-width:860px">
+
+  <div class="page-header">
+    <div>
+      <div class="section-label">Leads</div>
+      <h2 id="form-title">New Lead</h2>
+    </div>
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+      <button id="btn-wa-preview" class="btn-wa">
+        <span>📲</span> WhatsApp
+      </button>
+      <button id="btn-cancel" class="btn btn-secondary">Cancel</button>
+    </div>
+  </div>
+
+  <form id="lead-form">
+
+    <!-- ── 1. CONTACT INFORMATION ─────────────────── -->
+    <div class="card" style="margin-bottom:1.5rem">
+      <div class="form-section-title">1 · Contact Information</div>
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="name">Full Name *</label>
+          <input type="text" id="name" placeholder="Lead's full name" required/>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone Number *</label>
+          <input type="tel" id="phone" placeholder="+27 81 234 5678" required/>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="lead@example.co.za"/>
+        </div>
+
+        <div class="form-group">
+          <label for="preferredContact">Preferred Contact</label>
+          <select id="preferredContact">
+            <option value="phone">Phone Call</option>
+            <option value="whatsapp">WhatsApp</option>
+            <option value="email">Email</option>
+            <option value="sms">SMS</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="dateAdded">Date Added</label>
+          <input type="date" id="dateAdded"/>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── 2. PROPERTY PREFERENCES ───────────────── -->
+    <div class="card" style="margin-bottom:1.5rem">
+      <div class="form-section-title">2 · Property Preferences</div>
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="propertyType">Looking For</label>
+          <select id="propertyType">
+            <option value="sale">To Buy (Sale)</option>
+            <option value="rental">To Rent</option>
+            <option value="both">Both Sale &amp; Rental</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="areas">Areas of Interest</label>
+          <input type="text" id="areas" placeholder="e.g. Ballito, Umhlanga, Westville"/>
+        </div>
+
+        <div class="form-group">
+          <label for="budget">Budget (ZAR)</label>
+          <input type="text" id="budget" placeholder="e.g. R1.5M – R2.5M"/>
+        </div>
+
+        <div class="form-group">
+          <label for="bedrooms">Bedrooms</label>
+          <select id="bedrooms">
+            <option value="">Any</option>
+            <option>1</option><option>2</option><option>3</option>
+            <option>4</option><option>5</option><option>6+</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="bathrooms">Bathrooms</label>
+          <select id="bathrooms">
+            <option value="">Any</option>
+            <option>1</option><option>2</option><option>3</option>
+            <option>4</option><option>5+</option>
+          </select>
+        </div>
+
+        <div class="form-group full">
+          <label for="otherRequirements">Other Requirements</label>
+          <input type="text" id="otherRequirements" placeholder="e.g. pet-friendly, near schools, hospital, security estate, pool"/>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── 3. FINANCIAL & PERSONAL ───────────────── -->
+    <div class="card" style="margin-bottom:1.5rem">
+      <div class="form-section-title">3 · Financial &amp; Personal</div>
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="employment">Employment Status</label>
+          <select id="employment">
+            <option value="">Select…</option>
+            <option value="employed">Employed (Salaried)</option>
+            <option value="self-employed">Self-Employed</option>
+            <option value="business-owner">Business Owner</option>
+            <option value="retired">Retired</option>
+            <option value="student">Student</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="creditScore">Credit Score / Bond Pre-approval</label>
+          <select id="creditScore">
+            <option value="">Unknown</option>
+            <option value="excellent">Excellent (750+)</option>
+            <option value="good">Good (670–749)</option>
+            <option value="fair">Fair (580–669)</option>
+            <option value="poor">Poor (below 580)</option>
+            <option value="pre-approved">Bond Pre-approved ✓</option>
+            <option value="cash">Cash Buyer</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="familySize">Family Size</label>
+          <input type="number" id="familySize" placeholder="Number of people" min="1"/>
+        </div>
+
+        <div class="form-group">
+          <label for="birthDate">Date of Birth</label>
+          <input type="date" id="birthDate"/>
+          <span class="field-hint">Used for birthday relationship management</span>
+        </div>
+
+        <div class="form-group">
+          <label for="anniversary">Anniversary</label>
+          <input type="date" id="anniversary"/>
+          <span class="field-hint">Wedding or other important anniversary</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── 4. LEAD MANAGEMENT ─────────────────────── -->
+    <div class="card" style="margin-bottom:1.5rem">
+      <div class="form-section-title">4 · Lead Management</div>
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status">
+            <option value="New Lead">New Lead</option>
+            <option value="Qualified">Qualified</option>
+            <option value="Viewing Scheduled">Viewing Scheduled</option>
+            <option value="Offer Pending">Offer Pending</option>
+            <option value="Closed">Closed ✓</option>
+            <option value="Lost">Lost</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="source">Lead Source</label>
+          <select id="source">
+            <option value="">Select…</option>
+            <option value="walk-in">Walk-in</option>
+            <option value="online-ad">Online Advertisement</option>
+            <option value="property24">Property24</option>
+            <option value="private-property">Private Property</option>
+            <option value="referral">Referral</option>
+            <option value="cold-call">Cold Call</option>
+            <option value="social-media">Social Media</option>
+            <option value="show-house">Show House</option>
+            <option value="repeat-client">Repeat Client</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="lastContact">Last Contact Date</label>
+          <input type="date" id="lastContact"/>
+        </div>
+
+        <div class="form-group">
+          <label for="followUpDate">Follow-up Date</label>
+          <input type="date" id="followUpDate"/>
+        </div>
+
+        <div class="form-group full">
+          <label for="notes">Notes &amp; Interaction History</label>
+          <textarea id="notes" rows="5" placeholder="Conversation notes, requirements, concerns, viewing feedback…"></textarea>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── ACTIONS ─────────────────────────────────── -->
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;padding-top:.5rem">
+      <button type="submit" id="btn-submit" class="btn btn-primary btn-lg" style="flex:1;min-width:160px">
+        Add Lead
+      </button>
+      <button type="button" id="btn-cancel" class="btn btn-secondary btn-lg" style="flex:1;min-width:160px">
+        Cancel
+      </button>
+    </div>
+
+  </form>
+
+</main>
+
+<footer class="footer"><span class="mark">✦</span> Estate Agent Helper · MD Works <span class="mark">✦</span></footer>
+<div id="toast-container"></div>
+
+<script src="js/app.js"></script>
+<script src="js/sheets.js"></script>
+<script src="js/lead-form.js"></script>
+</body>
+</html>

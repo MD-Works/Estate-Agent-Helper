@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Property Form — Estate Agent Helper</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Raleway:wght@200;300;400;500&family=Syne:wght@400;500;600;700&family=Syne+Mono&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="dashboard.html" class="nav-brand"><span class="mark">✦</span> Estate Agent Helper</a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="leads.html">My Leads</a></li>
+      <li><a href="properties.html">Properties</a></li>
+      <li><a href="inspections.html">Inspections</a></li>
+      <li><a href="diary.html">Diary</a></li>
+    </ul>
+    <div class="nav-right">
+      <span class="nav-agent" id="nav-agent"></span>
+      <button id="btn-logout" class="btn btn-ghost btn-sm">Sign out</button>
+      <button class="nav-toggle" id="nav-toggle">☰</button>
+    </div>
+  </div>
+</nav>
+
+<main class="page-content" style="max-width:860px">
+
+  <div class="page-header">
+    <div>
+      <div class="section-label">Properties</div>
+      <h2 id="form-title">New Property</h2>
+      <p class="tagline" id="form-address-preview">Complete listing details below</p>
+    </div>
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+      <a id="btn-inspect" href="inspection-form.html" class="btn btn-secondary" style="display:none">🔍 Inspect</a>
+      <button id="btn-cancel" class="btn btn-secondary">Cancel</button>
+    </div>
+  </div>
+
+  <form id="property-form">
+
+    <!-- ── 1. LOCATION ──────────────────────────────── -->
+    <div class="card" style="margin-bottom:1.5rem">
+      <div class="form-section-title">1 · Location</div>
+      <div class="form-grid">
+
+        <div class="form-group full">
+          <label for="address">Street Address *</label>
+          <input type="text" id="address" placeholder="e.g. 12 Beach Road" required/>
+        </div>
+
+        <div class="form-group">
+          <label for="suburb">Suburb *</label>
+          <input type="text" id="suburb" placeholder="e.g. Umhlanga Rocks" required/>
+        </div>
+
+        <div class="form-group">
+          <label for="city">City / Town</label>
+          <input type="text" id="city" placeholder="e.g. Durban"/>
+        </div>
+
+        <div class="form-group">
+          <label for="province">Province</label>
+          <select id="province">
+            <option value="">Select…</option>
+            <option>KwaZulu-Natal</option>
+            <option>Gauteng</option>
+            <option>Western Cape</option>
+            <option>Eastern Cape</option>
+            <option>Mpumalanga</option>
+            <option>Limpopo</option>
+            <option>Free State</option>
+            <option>North West</option>
+            <option>Northern Cape</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="erfNumber">Erf / Stand Number</label>
+          <input type="text" id="erfNumber" placeholder="e.g. Erf 1234"/>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── 2. LISTING TYPE & STATUS ─────────────────── -->
+    <div class="card" style="margin-bottom:1.5rem">
+      <div class="form-section-title">2 · Listing Type &amp; Status</div>
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="type">Listing Type *</label>
+          <select id="type" required>
+            <option value="">Select…</option>
+            <option value="sale">For Sale</option>
+            <option value="rental">For Rent</option>
+            <option value="both">Sale &amp; Rental</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status">
+            <option value="active">Active</option>
+            <option value="pending">Pending / Under Offer</option>
+            <option value="sold">Sold</option>
+            <option value="rented">Rented</option>
+            <option value="off-market">Off Market</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="mandateType">Mandate Type</label>
+          <select id="mandateType">
+            <option value="">Select…</option>
+            <option value="sole">Sole Mandate</option>
+            <option value="open">Open Mandate</option>
+            <option value="dual">Dual Mandate</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="mandateExpiry">Mandate Expiry Date</label>
+          <input type="date" id="mandateExpiry"/>
+        </div>
+
+        <div class="form-group">
+          <label for="dateAdded">Date Listed</label>
+          <input type="date" id="dateAdded"/>
+        </div>
+
+        <div class="form-group">
+          <label for="assignedAgent">Assigned Agent</label>
+          <input type="text" id="assignedAgent" placeholder="Agent name or email"/>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── 3. PRICING ──────────────────────────────── -->
+    <div class="card" style="margin-bottom:1.5rem">
+      <div class="form-section-title">3 · Pricing</div>
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="price">Asking Price / Rent (ZAR) *</label>
+          <input type="text" id="price" placeholder="e.g. R 2 500 000 or R 15 000 pm" required/>
+        </div>
+
+        <div class="form-group">
+          <label for="levies">Levies (pm)</label>
+          <input type="text" id="levies" placeholder="e.g. R 1 200"/>
+        </div>
+
+        <div class="form-group">
+          <label for="rates">Rates &amp; Taxes (pm)</label>
+          <input type="text" id="rates" placeholder="e.g. R 800"/>
+        </div>
+
+        <div class="form-group">
+          <label for="deposit">Deposit Required</label>
+          <input type="text" id="deposit" placeholder="e.g. R 30 000 or 2 months rent"/>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── 4. PROPERTY DETAILS ──────────────────────── -->
+    <div class="card" style="margin-bottom:1.5rem">
+      <div class="form-section-title">4 · Property Details</div>
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="propertyType">Property Type</label>
+          <select id="propertyType">
+            <option value="">Select…</option>
+            <option value="freestanding">Freestanding House</option>
+            <option value="townhouse">Townhouse</option>
+            <option value="apartment">Apartment / Flat</option>
+            <option value="duplex">Duplex</option>
+            <option value="cluster">Cluster</option>
+            <option value="smallholding">Smallholding</option>
+            <option value="vacant-land">Vacant Land</option>
+            <option value="commercial">Commercial</option>
+            <option value="industrial">Industrial</option>
+            <option value="farm">Farm</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="bedrooms">Bedrooms</label>
+          <select id="bedrooms">
+            <option value="">—</option>
+            <option>Studio</option>
+            <option>1</option><option>2</option><option>3</option>
+            <option>4</option><option>5</option><option>6+</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="bathrooms">Bathrooms</label>
+          <select id="bathrooms">
+            <option value="">—</option>
+            <option>1</option><option>2</option><option>3</option>
+            <option>4</option><option>5+</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="garages">Garages / Parking</label>
+          <select id="garages">
+            <option value="">—</option>
+            <option>None</option>
+            <option>1</option><option>2</option><option>3</option><option>4+</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="size">Floor Size (m²)</label>
+          <input type="number" id="size" placeholder="e.g. 180"/>
+        </div>
+
+        <div class="form-group">
+          <label for="erfSize">Erf / Stand Size (m²)</label>
+          <input type="number" id="erfSize" placeholder="e.g. 650"/>
+        </div>
+
+        <div class="form-group">
+          <label for="yearBuilt">Year Built</label>
+          <input type="number" id="yearBuilt" placeholder="e.g. 2005" min="1800" max="2030"/>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── 5. FEATURES & AMENITIES ──────────────────── -->
+    <div class="card" style="margin-bottom:1.5rem">
+      <div class="form-section-title">5 · Features &amp; Amenities</div>
+      <div class="form-grid">
+
+        <div class="form-group full">
+          <label>Select All That Apply</label>
+          <div id="features-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.5rem;margin-top:.5rem">
+          </div>
+        </div>
+
+        <div class="form-group full">
+          <label for="otherFeatures">Other Features</label>
+          <input type="text" id="otherFeatures" placeholder="e.g. flatlet, staff quarters, borehole, solar geysers"/>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── 6. DESCRIPTION ──────────────────────────── -->
+    <div class="card" style="margin-bottom:1.5rem">
+      <div class="form-section-title">6 · Listing Description</div>
+      <div class="form-group">
+        <label for="description">Property Description</label>
+        <textarea id="description" rows="6"
+          placeholder="Write a compelling description for advertising. Include key highlights, lifestyle benefits, nearby amenities (schools, hospitals, shopping), access, security, etc."></textarea>
+        <span class="field-hint">This text will be used for advertising on Property24, Private Property, etc.</span>
+      </div>
+      <div class="form-group" style="margin-top:1rem">
+        <label for="internalNotes">Internal Notes (not for advertising)</label>
+        <textarea id="internalNotes" rows="3"
+          placeholder="Owner details, access instructions, showing notes, commission splits…"></textarea>
+      </div>
+    </div>
+
+    <!-- ── 7. OWNER / SELLER DETAILS ───────────────── -->
+    <div class="card" style="margin-bottom:1.5rem">
+      <div class="form-section-title">7 · Owner / Seller Contact</div>
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="ownerName">Owner / Seller Name</label>
+          <input type="text" id="ownerName" placeholder="Full name"/>
+        </div>
+
+        <div class="form-group">
+          <label for="ownerPhone">Owner Phone</label>
+          <input type="tel" id="ownerPhone" placeholder="+27 82 000 0000"/>
+        </div>
+
+        <div class="form-group">
+          <label for="ownerEmail">Owner Email</label>
+          <input type="email" id="ownerEmail" placeholder="owner@email.co.za"/>
+        </div>
+
+        <div class="form-group">
+          <label for="ownerPreferred">Preferred Contact</label>
+          <select id="ownerPreferred">
+            <option value="phone">Phone Call</option>
+            <option value="whatsapp">WhatsApp</option>
+            <option value="email">Email</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="showingInstructions">Showing Instructions</label>
+          <input type="text" id="showingInstructions" placeholder="e.g. Call owner 1 hour before, key at agency"/>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── ACTIONS ──────────────────────────────────── -->
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;padding-top:.5rem">
+      <button type="submit" id="btn-submit" class="btn btn-primary btn-lg" style="flex:1;min-width:160px">
+        Add Property
+      </button>
+      <button type="button" id="btn-cancel" class="btn btn-secondary btn-lg" style="flex:1;min-width:160px">
+        Cancel
+      </button>
+    </div>
+
+  </form>
+
+</main>
+
+<footer class="footer"><span class="mark">✦</span> Estate Agent Helper · MD Works <span class="mark">✦</span></footer>
+<div id="toast-container"></div>
+
+<script src="js/app.js"></script>
+<script src="js/sheets.js"></script>
+<script src="js/property-form.js"></script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Properties — Estate Agent Helper</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Raleway:wght@200;300;400;500&family=Syne:wght@400;500;600;700&family=Syne+Mono&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="dashboard.html" class="nav-brand"><span class="mark">✦</span> Estate Agent Helper</a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="leads.html">My Leads</a></li>
+      <li><a href="properties.html">Properties</a></li>
+      <li><a href="inspections.html">Inspections</a></li>
+      <li><a href="diary.html">Diary</a></li>
+    </ul>
+    <div class="nav-right">
+      <span class="nav-agent" id="nav-agent"></span>
+      <button id="btn-logout" class="btn btn-ghost btn-sm">Sign out</button>
+      <button class="nav-toggle" id="nav-toggle">☰</button>
+    </div>
+  </div>
+</nav>
+
+<main class="page-content">
+
+  <div class="page-header">
+    <div>
+      <div class="section-label">Agency Listings</div>
+      <h2>Properties</h2>
+      <p class="muted" id="prop-count">Loading…</p>
+    </div>
+    <a href="property-form.html" class="btn btn-primary">+ New Property</a>
+  </div>
+
+  <!-- Filters -->
+  <div style="display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
+    <input type="search" id="search" placeholder="Search address or suburb…" style="flex:1;min-width:200px"/>
+    <select id="filter-type" style="width:auto">
+      <option value="">All Types</option>
+      <option value="sale">For Sale</option>
+      <option value="rental">For Rent</option>
+      <option value="both">Sale &amp; Rental</option>
+    </select>
+    <select id="filter-status" style="width:auto">
+      <option value="">All Statuses</option>
+      <option value="active">Active</option>
+      <option value="pending">Pending</option>
+      <option value="sold">Sold</option>
+      <option value="rented">Rented</option>
+    </select>
+  </div>
+
+  <!-- Properties Grid -->
+  <div class="grid-3" id="properties-grid">
+    <div class="card" style="grid-column:1/-1;text-align:center;padding:3rem">
+      <div class="empty-icon">🏠</div>
+      <p class="muted" style="margin-bottom:1.5rem">No properties listed yet</p>
+      <a href="property-form.html" class="btn btn-primary">Add First Property</a>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer"><span class="mark">✦</span> Estate Agent Helper · MD Works <span class="mark">✦</span></footer>
+<div id="toast-container"></div>
+
+<script src="js/app.js"></script>
+<script src="js/sheets.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Session.guard()
+
+    let properties = LocalDB.getProperties()
+    let filtered   = [...properties]
+
+    render(filtered)
+
+    const searchEl = document.getElementById('search')
+    const typeEl   = document.getElementById('filter-type')
+    const statusEl = document.getElementById('filter-status')
+
+    function applyFilters() {
+      const q      = searchEl.value.toLowerCase()
+      const type   = typeEl.value
+      const status = statusEl.value
+      filtered = properties.filter(p => {
+        const matchQ      = !q      || (p.address + p.suburb).toLowerCase().includes(q)
+        const matchType   = !type   || p.type === type
+        const matchStatus = !status || p.status === status
+        return matchQ && matchType && matchStatus
+      })
+      render(filtered)
+    }
+
+    searchEl.addEventListener('input', applyFilters)
+    typeEl.addEventListener('change', applyFilters)
+    statusEl.addEventListener('change', applyFilters)
+  })
+
+  function render(props) {
+    const grid    = document.getElementById('properties-grid')
+    const countEl = document.getElementById('prop-count')
+    countEl.textContent = `${props.length} propert${props.length !== 1 ? 'ies' : 'y'}`
+
+    if (props.length === 0) {
+      grid.innerHTML = `
+        <div class="card" style="grid-column:1/-1;text-align:center;padding:3rem">
+          <div class="empty-icon">🏠</div>
+          <p class="muted" style="margin-bottom:1.5rem">No properties found</p>
+          <a href="property-form.html" class="btn btn-primary">Add Property</a>
+        </div>`
+      return
+    }
+
+    const typeLabel = { sale: '🏷️ For Sale', rental: '🔑 For Rent', both: '🔄 Sale &amp; Rental' }
+    const statusColors = {
+      active:  'var(--md-success)',
+      pending: 'var(--md-warning)',
+      sold:    'var(--md-muted)',
+      rented:  'var(--md-muted)',
+    }
+
+    grid.innerHTML = props.map(p => `
+      <div class="card" style="display:flex;flex-direction:column;gap:.75rem">
+        <div class="flex-between">
+          <span style="font-size:.75rem;color:${statusColors[p.status] || 'var(--md-muted)'};font-family:'Syne Mono',monospace;letter-spacing:.1em;text-transform:uppercase">${p.status || 'active'}</span>
+          <span style="font-size:.8rem;color:var(--md-muted)">${typeLabel[p.type] || '🏠'}</span>
+        </div>
+        <div>
+          <h4 style="color:var(--md-gold-lt);margin-bottom:.25rem">${p.address || '—'}</h4>
+          <p class="muted" style="font-size:.85rem">${p.suburb || ''} ${p.city ? '· ' + p.city : ''}</p>
+        </div>
+        <div style="font-family:'Cinzel',serif;font-size:1.2rem;color:var(--md-cream)">${p.price || '—'}</div>
+        <div style="display:flex;gap:1rem;font-size:.82rem;color:var(--md-muted)">
+          ${p.bedrooms   ? `<span>🛏 ${p.bedrooms} bed</span>`  : ''}
+          ${p.bathrooms  ? `<span>🚿 ${p.bathrooms} bath</span>` : ''}
+          ${p.garages    ? `<span>🚗 ${p.garages} garage</span>` : ''}
+          ${p.size       ? `<span>📐 ${p.size} m²</span>`       : ''}
+        </div>
+        ${p.description ? `<p style="font-size:.85rem;color:var(--md-muted)">${p.description}</p>` : ''}
+        <div class="flex-between" style="margin-top:auto;padding-top:.75rem;border-top:1px solid var(--md-border)">
+          <span class="muted" style="font-size:.78rem">Agent: ${p.assignedAgent || '—'}</span>
+          <div style="display:flex;gap:.5rem">
+            <a href="inspection-form.html?property=${p.id}" class="btn btn-ghost btn-sm">Inspect</a>
+            <a href="property-form.html?id=${p.id}" class="btn btn-secondary btn-sm">Edit</a>
+          </div>
+        </div>
+      </div>
+    `).join('')
+  }
+</script>
+</body>
+</html>

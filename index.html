@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Estate Agent Helper — Lead & property management for SA agents"/>
+  <title>Estate Agent Helper — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Raleway:wght@200;300;400;500&family=Syne:wght@400;500;600;700&family=Syne+Mono&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .login-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+    .login-wrap { width: 100%; max-width: 440px; }
+    .login-hero { text-align: center; margin-bottom: 3rem; }
+    .login-hero .ornament {
+      font-family: 'Cinzel', serif;
+      font-size: 3rem;
+      color: var(--md-gold);
+      display: block;
+      margin-bottom: .75rem;
+      text-shadow: 0 0 40px var(--md-gold-glow);
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-page">
+  <div class="login-wrap">
+
+    <!-- Hero -->
+    <div class="login-hero">
+      <span class="ornament">✦</span>
+      <h1>Estate Agent Helper</h1>
+      <p class="tagline" style="margin-top:.75rem">
+        Lead &amp; property management for South African agents
+      </p>
+    </div>
+
+    <!-- ── VIEW: LOGIN ─────────────────────────────── -->
+    <div id="view-login">
+
+      <!-- Direct Login -->
+      <div class="card card-lg" style="margin-bottom:1.25rem">
+        <div class="section-label">Quick Login</div>
+        <form id="form-login" style="display:flex;flex-direction:column;gap:1rem">
+          <div class="form-group">
+            <label for="login-email">Email Address</label>
+            <input type="email" id="login-email" placeholder="agent@agency.co.za" required autocomplete="email"/>
+          </div>
+          <div class="form-group">
+            <label for="login-agency">Agency ID <span class="muted">(optional)</span></label>
+            <input type="text" id="login-agency" placeholder="e.g. pam-golding-durban"/>
+          </div>
+          <div id="login-error" class="alert alert-error" style="display:none"></div>
+          <button type="submit" class="btn btn-primary btn-lg btn-full">Login</button>
+        </form>
+      </div>
+
+      <!-- QR Code -->
+      <div class="card" style="margin-bottom:1.25rem">
+        <div class="section-label">Login via QR Code</div>
+        <p class="muted" style="margin-bottom:1rem;font-size:.88rem">
+          Generate a QR code — share it with your team so they can log in by scanning.
+        </p>
+        <button id="btn-generate-qr" class="btn btn-secondary btn-full">Generate QR Code</button>
+      </div>
+
+      <!-- Admin hint -->
+      <div style="padding:1rem;background:rgba(201,148,60,.08);border:1px solid var(--md-gold-dk);border-radius:var(--md-radius)">
+        <p style="font-size:.85rem;color:var(--md-gold-lt)">
+          <strong style="font-family:'Cinzel',serif">Admin?</strong>
+          Generate a QR code and share the link with your agents for instant access.
+        </p>
+      </div>
+    </div>
+
+    <!-- ── VIEW: QR CODE ───────────────────────────── -->
+    <div id="view-qr" style="display:none">
+      <div class="card card-lg" style="text-align:center">
+        <div class="section-label" style="justify-content:center">Share this QR Code</div>
+        <p class="muted" style="margin-bottom:1.5rem;font-size:.88rem">
+          Agents scan with their phone camera to log in instantly.
+        </p>
+        <div class="qr-wrap" style="margin-bottom:1.5rem">
+          <div id="qr-code"></div>
+        </div>
+        <div style="background:var(--md-panel);border-radius:var(--md-radius);padding:.75rem;margin-bottom:1rem;text-align:left">
+          <p id="qr-link" style="font-family:'Syne Mono',monospace;font-size:.72rem;color:var(--md-muted);word-break:break-all"></p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.75rem">
+          <button id="btn-copy-qr" class="btn btn-secondary btn-full">Copy Link</button>
+          <button id="btn-qr-back" class="btn btn-ghost btn-full">← Back to Login</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── VIEW: CONFIRM (after QR scan) ──────────── -->
+    <div id="view-confirm" style="display:none">
+      <div class="card card-lg">
+        <div class="section-label">Complete Authentication</div>
+        <p class="muted" style="margin-bottom:1.5rem;font-size:.88rem">
+          Enter your details to complete the QR code login.
+        </p>
+        <form id="form-confirm" style="display:flex;flex-direction:column;gap:1rem">
+          <div class="form-group">
+            <label for="confirm-email">Email Address</label>
+            <input type="email" id="confirm-email" placeholder="your@email.co.za" required autofocus/>
+          </div>
+          <div class="form-group">
+            <label for="confirm-agency">Agency ID <span class="muted">(optional)</span></label>
+            <input type="text" id="confirm-agency" placeholder="e.g. pam-golding-durban"/>
+          </div>
+          <div id="confirm-error" class="alert alert-error" style="display:none"></div>
+          <button type="submit" class="btn btn-primary btn-lg btn-full">Confirm &amp; Login</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer" style="margin-top:2.5rem">
+      <span class="mark">✦</span> MD WORKS <span class="mark">✦</span><br/>
+      Zero-cost first. Real deployment. Craft over speed.
+    </div>
+
+  </div>
+</div>
+
+<!-- QRCode.js from CDN (no npm needed) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>

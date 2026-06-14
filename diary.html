@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Diary — Estate Agent Helper</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Raleway:wght@200;300;400;500&family=Syne:wght@400;500;600;700&family=Syne+Mono&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .calendar-wrap {
+      width: 100%; border-radius: var(--md-radius); overflow: hidden;
+      border: 1px solid var(--md-border); background: var(--md-surface);
+    }
+    .calendar-wrap iframe {
+      width: 100%; height: 660px; border: none; display: block;
+      filter: invert(1) hue-rotate(180deg) brightness(0.88) contrast(0.95);
+    }
+    .event-type-btn {
+      display: flex; flex-direction: column; align-items: center; gap: .5rem;
+      padding: .85rem .6rem; background: var(--md-panel);
+      border: 1px solid var(--md-border); border-radius: var(--md-radius);
+      cursor: pointer; transition: border-color .2s, transform .15s;
+      flex: 1; min-width: 70px; text-align: center;
+    }
+    .event-type-btn:hover { border-color: var(--md-gold); transform: translateY(-2px); }
+    .event-type-btn.selected { border-color: var(--md-gold); background: rgba(201,148,60,.1); }
+    .event-type-btn .evt-icon { font-size: 1.5rem; }
+    .event-type-btn .evt-label { font-family: 'Syne Mono', monospace; font-size: .58rem; letter-spacing: .12em; text-transform: uppercase; color: var(--md-muted); }
+    .event-type-btn.selected .evt-label { color: var(--md-gold-lt); }
+    .setup-banner {
+      background: rgba(201,148,60,.08); border: 1px solid var(--md-gold-dk);
+      border-radius: var(--md-radius); padding: 1rem 1.25rem;
+      display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem;
+    }
+    @media (max-width: 900px) {
+      .diary-grid { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="dashboard.html" class="nav-brand"><span class="mark">✦</span> Estate Agent Helper</a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="leads.html">My Leads</a></li>
+      <li><a href="properties.html">Properties</a></li>
+      <li><a href="inspections.html">Inspections</a></li>
+      <li><a href="diary.html">Diary</a></li>
+    </ul>
+    <div class="nav-right">
+      <span class="nav-agent" id="nav-agent"></span>
+      <button id="btn-logout" class="btn btn-ghost btn-sm">Sign out</button>
+      <button class="nav-toggle" id="nav-toggle">☰</button>
+    </div>
+  </div>
+</nav>
+
+<main class="page-content">
+
+  <div class="page-header">
+    <div>
+      <div class="section-label">Google Calendar</div>
+      <h2>My Diary</h2>
+      <p class="tagline">Your personal calendar — synced across all devices</p>
+    </div>
+  </div>
+
+  <!-- Setup banner -->
+  <div class="setup-banner" id="setup-banner" style="display:none">
+    <span style="font-size:1.4rem;flex-shrink:0">💡</span>
+    <div style="flex:1">
+      <p style="margin-bottom:.75rem;font-size:.9rem;color:var(--md-cream)">
+        <strong style="font-family:'Cinzel',serif;color:var(--md-gold-lt)">Connect your Google Calendar.</strong>
+        Enter your Gmail address — your events stay in Google, we just display them here.
+      </p>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+        <input type="email" id="cal-email-input" placeholder="yourname@gmail.com"
+          style="flex:1;min-width:200px;padding:.6rem .75rem"/>
+        <button class="btn btn-primary btn-sm" onclick="saveCalendarEmail()">Connect Calendar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main grid -->
+  <div class="diary-grid" style="display:grid;grid-template-columns:1fr 310px;gap:1.5rem;align-items:start">
+
+    <!-- LEFT: Calendar embed -->
+    <div>
+      <div class="calendar-wrap" id="calendar-wrap">
+        <div id="cal-placeholder" style="height:660px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;text-align:center;padding:2rem">
+          <div style="font-size:3.5rem;opacity:.5">📅</div>
+          <h3>Connect Your Calendar</h3>
+          <p class="muted">Enter your Gmail address in the banner above to display your Google Calendar here.</p>
+        </div>
+      </div>
+      <!-- View controls -->
+      <div style="display:flex;gap:.5rem;margin-top:.75rem;flex-wrap:wrap;align-items:center">
+        <span class="label" style="margin-right:.25rem">View:</span>
+        <button class="btn btn-secondary btn-sm" onclick="setView('month')">Month</button>
+        <button class="btn btn-secondary btn-sm" onclick="setView('week')">Week</button>
+        <button class="btn btn-secondary btn-sm" onclick="setView('day')">Day</button>
+        <button class="btn btn-secondary btn-sm" onclick="setView('agenda')">Agenda</button>
+        <div style="flex:1"></div>
+        <button class="btn btn-ghost btn-sm" onclick="changeCalEmail()" style="font-size:.78rem">Change email ✎</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: Sidebar -->
+    <div style="display:flex;flex-direction:column;gap:1.25rem">
+
+      <!-- Quick Add -->
+      <div class="card">
+        <div class="section-label">Add to Calendar</div>
+        <p class="muted" style="font-size:.83rem;margin-bottom:1rem">
+          Opens Google Calendar pre-filled. Just click Save.
+        </p>
+
+        <!-- Event type pills -->
+        <div style="display:flex;gap:.4rem;margin-bottom:1rem;flex-wrap:wrap">
+          <button class="event-type-btn selected" data-type="viewing" onclick="selectType(this,'viewing')">
+            <span class="evt-icon">🏠</span><span class="evt-label">Viewing</span>
+          </button>
+          <button class="event-type-btn" data-type="follow-up" onclick="selectType(this,'follow-up')">
+            <span class="evt-icon">📞</span><span class="evt-label">Follow-up</span>
+          </button>
+          <button class="event-type-btn" data-type="inspection" onclick="selectType(this,'inspection')">
+            <span class="evt-icon">🔍</span><span class="evt-label">Inspect</span>
+          </button>
+          <button class="event-type-btn" data-type="meeting" onclick="selectType(this,'meeting')">
+            <span class="evt-icon">🤝</span><span class="evt-label">Meeting</span>
+          </button>
+          <button class="event-type-btn" data-type="other" onclick="selectType(this,'other')">
+            <span class="evt-icon">📌</span><span class="evt-label">Other</span>
+          </button>
+        </div>
+
+        <!-- From lead shortcut -->
+        <div class="form-group" style="margin-bottom:.75rem">
+          <label>Pre-fill from Lead</label>
+          <select id="lead-picker" onchange="fillFromLead(this.value)">
+            <option value="">— Select a lead —</option>
+          </select>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:.65rem">
+          <div class="form-group">
+            <label for="evt-title">Title</label>
+            <input type="text" id="evt-title" placeholder="e.g. John Smith — Umhlanga"/>
+          </div>
+          <div class="form-group">
+            <label for="evt-date">Date</label>
+            <input type="date" id="evt-date"/>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem">
+            <div class="form-group">
+              <label>Start</label>
+              <input type="time" id="evt-start" value="09:00"/>
+            </div>
+            <div class="form-group">
+              <label>End</label>
+              <input type="time" id="evt-end" value="10:00"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="evt-location">Location</label>
+            <input type="text" id="evt-location" placeholder="12 Beach Rd, Umhlanga"/>
+          </div>
+          <div class="form-group">
+            <label for="evt-notes">Notes</label>
+            <textarea id="evt-notes" rows="3" placeholder="Details, lead info, instructions…"></textarea>
+          </div>
+          <button class="btn btn-primary btn-full" onclick="openInGoogleCalendar()">
+            📅 Open in Google Calendar
+          </button>
+          <p class="muted" style="font-size:.72rem;text-align:center">
+            Opens a new tab — click Save in Google to confirm
+          </p>
+        </div>
+      </div>
+
+      <!-- Follow-ups due -->
+      <div class="card">
+        <div class="section-label">Follow-ups Due</div>
+        <div id="diary-followups">
+          <p class="muted" style="font-size:.83rem">Loading…</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer"><span class="mark">✦</span> Estate Agent Helper · MD Works <span class="mark">✦</span></footer>
+<div id="toast-container"></div>
+
+<script src="js/app.js"></script>
+<script src="js/sheets.js"></script>
+<script>
+
+const CAL_KEY    = 'eah_cal_email'
+let   calEmail   = ''
+let   activeType = 'viewing'
+
+document.addEventListener('DOMContentLoaded', () => {
+  Session.guard()
+
+  document.getElementById('evt-date').value = new Date().toISOString().split('T')[0]
+
+  calEmail = localStorage.getItem(CAL_KEY) || ''
+  if (calEmail) {
+    renderCalendar(calEmail, 'month')
+  } else {
+    document.getElementById('setup-banner').style.display = 'flex'
+    const { email } = Session.get()
+    if (email) document.getElementById('cal-email-input').value = email
+  }
+
+  populateLeadPicker()
+  renderFollowUps()
+})
+
+/* ── Calendar ──────────────────────────────────── */
+function renderCalendar(email, view) {
+  const wrap = document.getElementById('calendar-wrap')
+  const ph   = document.getElementById('cal-placeholder')
+  if (ph) ph.remove()
+  const old  = wrap.querySelector('iframe')
+  if (old) old.remove()
+
+  const src = `https://calendar.google.com/calendar/embed?src=${encodeURIComponent(email)}&ctz=Africa%2FJohannesburg&mode=${view.toUpperCase()}&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=0&showCalendars=0`
+  const iframe = document.createElement('iframe')
+  iframe.src   = src
+  iframe.title = 'Google Calendar'
+  wrap.appendChild(iframe)
+}
+
+function setView(view) {
+  if (!calEmail) { showToast('Connect your calendar first', 'error'); return }
+  renderCalendar(calEmail, view)
+}
+
+function saveCalendarEmail() {
+  const val = document.getElementById('cal-email-input').value.trim()
+  if (!val || !val.includes('@')) { showToast('Enter a valid email', 'error'); return }
+  calEmail = val
+  localStorage.setItem(CAL_KEY, calEmail)
+  document.getElementById('setup-banner').style.display = 'none'
+  renderCalendar(calEmail, 'month')
+  showToast('Calendar connected ✓', 'success')
+}
+
+function changeCalEmail() {
+  localStorage.removeItem(CAL_KEY)
+  calEmail = ''
+  const wrap = document.getElementById('calendar-wrap')
+  wrap.innerHTML = `<div id="cal-placeholder" style="height:660px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;text-align:center;padding:2rem">
+    <div style="font-size:3.5rem;opacity:.5">📅</div>
+    <h3>Connect Your Calendar</h3>
+    <p class="muted">Enter your Gmail address in the banner above.</p>
+  </div>`
+  document.getElementById('setup-banner').style.display = 'flex'
+}
+
+/* ── Event type ─────────────────────────────────── */
+function selectType(btn, type) {
+  document.querySelectorAll('.event-type-btn').forEach(b => b.classList.remove('selected'))
+  btn.classList.add('selected')
+  activeType = type
+  const ph = { viewing:'John Smith — 3 bed Umhlanga', 'follow-up':'Follow-up — Jane Doe',
+    inspection:'Entry Inspection — 12 Beach Rd', meeting:'Team meeting', other:'Event title' }
+  document.getElementById('evt-title').placeholder = ph[type] || 'Event title'
+}
+
+/* ── Open in Google Calendar ────────────────────── */
+function openInGoogleCalendar() {
+  const title    = document.getElementById('evt-title').value.trim()
+  const date     = document.getElementById('evt-date').value
+  const start    = document.getElementById('evt-start').value || '09:00'
+  const end      = document.getElementById('evt-end').value   || '10:00'
+  const location = document.getElementById('evt-location').value.trim()
+  const notes    = document.getElementById('evt-notes').value.trim()
+
+  if (!title) { showToast('Enter a title first', 'error'); document.getElementById('evt-title').focus(); return }
+  if (!date)  { showToast('Select a date', 'error'); return }
+
+  const fmt = (d,t) => `${d.replace(/-/g,'')}T${t.replace(/:/g,'')}00`
+  const prefix = { viewing:'🏠 Viewing', 'follow-up':'📞 Follow-up',
+    inspection:'🔍 Inspection', meeting:'🤝 Meeting', other:'📌' }
+  const fullTitle = `${prefix[activeType]}: ${title}`
+
+  const params = new URLSearchParams({
+    action:'TEMPLATE', text:fullTitle,
+    dates:`${fmt(date,start)}/${fmt(date,end)}`,
+    details:notes, location, ctz:'Africa/Johannesburg'
+  })
+
+  window.open(`https://calendar.google.com/calendar/render?${params}`, '_blank')
+  showToast('Opened Google Calendar — click Save to confirm', 'info', 5000)
+  showRefreshPrompt()
+}
+
+function showRefreshPrompt() {
+  const old = document.getElementById('refresh-prompt')
+  if (old) old.remove()
+
+  const prompt = document.createElement('div')
+  prompt.id    = 'refresh-prompt'
+  prompt.style.cssText = `
+    position:fixed; bottom:5rem; left:50%; transform:translateX(-50%);
+    background:var(--md-surface); border:1px solid var(--md-gold-dk);
+    border-radius:50px; padding:.75rem 1.4rem;
+    display:flex; align-items:center; gap:.75rem;
+    box-shadow:0 8px 32px rgba(0,0,0,.5); z-index:999;
+    font-size:.85rem; color:var(--md-cream); white-space:nowrap;
+  `
+  prompt.innerHTML = `
+    <span style="color:var(--md-gold)">📅</span>
+    <span>Saved in Google? </span>
+    <button onclick="refreshCalendar()" style="
+      background:linear-gradient(135deg,var(--md-gold-dk),var(--md-gold));
+      color:var(--md-black); border:none; border-radius:50px;
+      padding:.4rem .9rem; font-family:'Cinzel',serif;
+      font-size:.72rem; letter-spacing:.1em; cursor:pointer;
+      text-transform:uppercase; font-weight:600;
+    ">Refresh Calendar</button>
+    <button onclick="this.closest('#refresh-prompt').remove()" style="
+      background:none; border:none; color:var(--md-muted);
+      cursor:pointer; font-size:1rem; line-height:1;
+    ">✕</button>
+  `
+  document.body.appendChild(prompt)
+  setTimeout(() => prompt.remove(), 30000)
+}
+
+function refreshCalendar() {
+  if (!calEmail) return
+  const iframe = document.querySelector('#calendar-wrap iframe')
+  if (iframe) {
+    const src = iframe.src
+    iframe.src = ''
+    setTimeout(() => { iframe.src = src }, 100)
+    showToast('Calendar refreshed ✓', 'success')
+  }
+  const p = document.getElementById('refresh-prompt')
+  if (p) p.remove()
+}
+
+/* ── Fill from lead ─────────────────────────────── */
+function populateLeadPicker() {
+  const { email } = Session.get()
+  const leads  = LocalDB.getLeads(email)
+  const picker = document.getElementById('lead-picker')
+  picker._leads = leads
+  if (!leads.length) return
+  picker.innerHTML = '<option value="">— Select a lead —</option>' +
+    leads.map((l,i) => `<option value="${i}">${l.name}${l.areas?' · '+l.areas:''}</option>`).join('')
+}
+
+function fillFromLead(idx) {
+  if (idx === '') return
+  const picker = document.getElementById('lead-picker')
+  const lead   = picker._leads[parseInt(idx)]
+  if (!lead) return
+
+  document.getElementById('evt-title').value = lead.name + (lead.areas ? ` — ${lead.areas}` : '')
+
+  const waMsg = encodeURIComponent(`Hi ${lead.name}, confirming your viewing. Please let me know if you have any questions.`)
+  const notes = [
+    lead.phone    ? `📱 ${lead.phone}` : '',
+    lead.email    ? `✉️ ${lead.email}` : '',
+    lead.budget   ? `💰 Budget: ${lead.budget}` : '',
+    lead.bedrooms ? `🛏 ${lead.bedrooms} bed` : '',
+    lead.notes    ? `📝 ${lead.notes}` : '',
+    lead.phone    ? `\n💬 WhatsApp: https://wa.me/${lead.phone.replace(/\D/g,'')}?text=${waMsg}` : '',
+  ].filter(Boolean).join('\n')
+
+  document.getElementById('evt-notes').value = notes
+
+  // Switch to viewing type
+  const vb = document.querySelector('[data-type="viewing"]')
+  if (vb) selectType(vb, 'viewing')
+  showToast(`Pre-filled from ${lead.name}`, 'success')
+}
+
+/* ── Follow-ups ─────────────────────────────────── */
+function renderFollowUps() {
+  const { email } = Session.get()
+  const today  = new Date().toISOString().split('T')[0]
+  const due    = LocalDB.getLeads(email).filter(l =>
+    l.followUpDate && l.followUpDate <= today && l.status !== 'Closed' && l.status !== 'Lost'
+  )
+  const el = document.getElementById('diary-followups')
+
+  if (!due.length) {
+    el.innerHTML = '<p class="muted" style="font-size:.83rem">No follow-ups due. ✓</p>'
+    return
+  }
+
+  el.innerHTML = due.map(l => {
+    const overdue = l.followUpDate < today
+    const msg = `Hi ${l.name}, following up on your property enquiry.`
+    return `<div style="margin-bottom:.65rem;padding:.65rem;background:var(--md-panel);border-radius:var(--md-radius);border:1px solid ${overdue?'var(--md-danger)':'var(--md-border)'}">
+      <div style="font-weight:600;color:var(--md-gold-lt);font-size:.87rem">${l.name}</div>
+      <div style="font-size:.75rem;color:${overdue?'var(--md-danger)':'var(--md-muted)'};margin:.2rem 0">
+        ${overdue?'⚠️ Overdue: ':'Due: '}${formatDate(l.followUpDate)}
+      </div>
+      <div style="display:flex;gap:.4rem;margin-top:.4rem;flex-wrap:wrap">
+        ${l.phone?`<a href="${waLink(l.phone,msg)}" target="_blank" class="btn-wa" style="font-size:.72rem;padding:.25rem .5rem">WhatsApp</a>`:''}
+        <a href="lead-form.html?id=${l.id}" class="btn btn-ghost btn-sm" style="font-size:.72rem;padding:.25rem .5rem">Edit</a>
+      </div>
+    </div>`
+  }).join('')
+}
+
+</script>
+</body>
+</html>
